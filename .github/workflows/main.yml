@@ -12,4 +12,4 @@ jobs:
         python-version: '3.9'
     - run: pip install tox
     - run: make lint
-    - run: make ci
+    # - run: make ci

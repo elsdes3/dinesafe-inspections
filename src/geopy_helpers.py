@@ -15,7 +15,7 @@ from geopy.geocoders import Bing
 from sqlalchemy import create_engine
 
 
-def run_bing_geocoder(row_number, street_address):
+def run_bing_geocoder(row_number, street_address, verbose: bool = False):
     """Geocode a single street addresses."""
     # Set up the Bing Geocoder
     geolocator = Bing(os.getenv("BING_MAPS_KEY"))
@@ -53,15 +53,19 @@ def run_bing_geocoder(row_number, street_address):
             "latitude": lat,
             "longitude": lon,
         }
-        print(f"{row_number}: Geocode completed for {street_address}", end="")
+        if verbose:
+            print(
+                f"{row_number}: Geocode completed for {street_address}", end=""
+            )
     except GeocoderTimedOut as e:
         # If geocoding did not work, create dictionary with None for each key
         # in the dictionary where geocoding was successful
-        print(
-            "{} - Error: geocode failed on input {} with message {}".format(
-                row_number, street_address, e.message
+        if verbose:
+            print(
+                "{} - Error: geocode failed on input {} with msg: {}".format(
+                    row_number, street_address, e.message
+                )
             )
-        )
         record = {
             "address": street_address,
             "neighbourhood": None,
@@ -80,6 +84,7 @@ def geocode_missing_lat_lon(
     uri=None,
     min_delay_seconds=5,
     max_delay_seconds=10,
+    verbose: bool = False,
 ):
     """Geocode a column with one or more street addresses."""
     engine = create_engine(uri)
@@ -101,11 +106,15 @@ def geocode_missing_lat_lon(
         # geocoding for street address
         if df_query["num_matching_street_addresses"].iloc[0] == 0:
             # Geocode
-            geocoded_output = run_bing_geocoder(row_num, street_address)
+            geocoded_output = run_bing_geocoder(
+                row_num, street_address, verbose
+            )
             # Pause
-            print("...Pausing...", end="")
+            if verbose:
+                print("...Pausing...", end="")
             sleep(randint(min_delay_seconds, max_delay_seconds))
-            print("Done.")
+            if verbose:
+                print("Done.")
             # Convert dictionary of geocoded outputs to DataFrame
             df_geocoded = pd.DataFrame.from_dict(
                 geocoded_output, orient="index"
@@ -117,9 +126,10 @@ def geocode_missing_lat_lon(
         else:
             # If geocoded output is available in local database, then do not
             # geocode the same street address
-            print(
-                f"{row_num}: Found existing record for {street_address}. "
-                "Did nothing."
-            )
+            if verbose:
+                print(
+                    f"{row_num}: Found existing record for {street_address}. "
+                    "Did nothing."
+                )
     conn.close()
     engine.dispose()
