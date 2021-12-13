@@ -3,22 +3,24 @@ channels:
   - conda-forge
 dependencies:
   - python==3.9.5
-  - pip==21.2.4
+  - pip==21.3.1
   - pip:
     - jupyter==1.0.0
     - nb_black==1.0.7
+    - jupyterlab==3.2.5
     - numpy==1.21.4
-    - pandas==1.3.4
+    - pandas==1.3.5
     - scikit-learn==1.0.1
     - imbalanced-learn==0.8.1
-    - matplotlib==3.5.0
+    - matplotlib==3.5.1
     - seaborn==0.11.2
     - lxml==4.6.4
     - python-dotenv==0.19.2
     - geopy==2.2.0
     - rtree==0.9.7
-    - pygeos==0.11.1
+    - pygeos==0.12.0
     - geopandas==0.10.2
+    - meteostat==1.5.10
     - pymysql==1.0.2
-    - sqlalchemy==1.4.27
+    - sqlalchemy==1.4.28
     - azure-storage-blob==12.9.0

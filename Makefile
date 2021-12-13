@@ -25,17 +25,17 @@ clean-py:
 	@find . -type d -name "__pycache__" -delete
 .PHONY: clean-py
 
-## Convert notebooks to HTML
-nb-convert:
-	@echo "+ $@"
-	@tox -e nbconvert
-.PHONY: nb-convert
-
 ## Run ci build with tox
 ci:
 	@echo "+ $@"
 	@tox -e ci
 .PHONY: ci
+
+## Run workflow
+workflow:
+	@echo "+ $@"
+	@tox -e workflow
+.PHONY: workflow
 
 ## Run jupyterlab with tox
 build:

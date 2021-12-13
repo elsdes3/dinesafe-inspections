@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-"""Helpers for Prefect Flows."""
+"""Helpers to run Prefect Flows."""
 
 # pylint: disable=invalid-name,
 # pylint: disable=logging-fstring-interpolation
@@ -11,6 +11,7 @@
 # pylint: disable=too-many-arguments
 
 
+import configparser
 import os
 from io import BytesIO
 from typing import List
@@ -32,13 +33,93 @@ def get_state_result(state):
     return state.result()
 
 
+@task
+def get_database_uris(config_filepath: str = "../sql.ini") -> List[str]:
+    """Get MySQL database URIs."""
+    logger = get_logger()
+    logger.info("Creating database connection URIs...")
+    config = configparser.ConfigParser()
+    config.read(config_filepath)
+    default_cfg = config["default"]
+
+    DB_TYPE = default_cfg["DB_TYPE"]
+    DB_DRIVER = default_cfg["DB_DRIVER"]
+    DB_USER = default_cfg["DB_USER"]
+    DB_PASS = default_cfg["DB_PASS"]
+    DB_HOST = default_cfg["DB_HOST"]
+    DB_PORT = default_cfg["DB_PORT"]
+    DB_NAME = default_cfg["DB_NAME"]
+
+    # Connect to single database (required to create database)
+    URI_NO_DB = (
+        f"{DB_TYPE}+{DB_DRIVER}://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}"
+    )
+
+    # Connect to all databases (required to perform CRUD operations and submit
+    # queries)
+    URI = (
+        f"{DB_TYPE}+{DB_DRIVER}://{DB_USER}:{DB_PASS}@{DB_HOST}:{DB_PORT}/"
+        f"{DB_NAME}"
+    )
+    logger.info("Done.")
+    return [URI_NO_DB, URI, DB_NAME]
+
+
+@task
+def prepare_database(outputs: List[str], dbase_table_name: str) -> None:
+    """Perform Database administration tasks."""
+    logger = get_logger()
+    logger.info("Creating database and table...")
+    conn_uri_no_db, conn_uri, db_name = outputs
+    # Create database
+    engine = create_engine(conn_uri_no_db)
+    conn = engine.connect()
+    # _ = conn.execute(f"DROP DATABASE IF EXISTS {db_name};")
+    _ = conn.execute(f"CREATE DATABASE IF NOT EXISTS {db_name};")
+    conn.close()
+    engine.dispose()
+
+    # Create database table
+    engine = create_engine(conn_uri)
+    conn = engine.connect()
+    # _ = conn.execute(f"DROP TABLE IF EXISTS {table_name}")
+    create_table_query = f"""
+                         CREATE TABLE IF NOT EXISTS {dbase_table_name} (
+                             row_id INT,
+                             establishment_id INT,
+                             inspection_id INT,
+                             establishment_name TEXT,
+                             establishmenttype TEXT,
+                             establishment_address TEXT,
+                             latitude FLOAT,
+                             longitude FLOAT,
+                             establishment_status TEXT,
+                             minimum_inspections_peryear INT,
+                             infraction_details TEXT,
+                             inspection_date DATE,
+                             severity TEXT,
+                             action TEXT,
+                             court_outcome TEXT,
+                             amount_fined FLOAT,
+                             filename VARCHAR(20)
+                         )
+                         """
+    _ = conn.execute(create_table_query)
+    conn.close()
+    engine.dispose()
+    logger.info("Done.")
+
+
 @task(
     name="Retrieve DineSafe infractions data from WayBackMachine",
     retries=2,
     retry_delay_seconds=0,
 )
-def extract(zip_filenames, uri, table_name) -> List[str]:
+def extract(
+    zip_filenames: List[str], outputs: List[str], table_name: str
+) -> List[str]:
     """Retrieve dinesafe data snapshot XML files from WayBackMachine."""
+    _, uri, _ = outputs
     logger = get_logger()
     available_files = []
     for zip_fname in zip_filenames:
@@ -138,9 +219,10 @@ def transform_all(files_lists, cols_order_wanted, table_name) -> List:
 
 @task(name="Append transformed infractions to database table")
 def load(
-    dfs: List[pd.DataFrame], uri: str, table_name="inspections"
+    dfs: List[pd.DataFrame], outputs: List[str], table_name="inspections"
 ) -> pd.DataFrame:
     """Vertically concatenate list of DataFrames and Append to database."""
+    _, uri, _ = outputs
     logger = get_logger()
     dfs_all = pd.concat(dfs, ignore_index=True).drop_duplicates(
         keep="first", subset=None
@@ -385,12 +467,13 @@ def create_class_labels(
 @flow(name="Converting infractions into inspections")
 def convert_infractions_to_inspections(
     establishment_types_wanted: List[str],
-    uri: str,
+    outputs: List[str],
     table_name: str,
     distinct_fnames: List[str],
     label_col_name: str = "is_infraction",
 ):
     """Aggregate infractions into inspections, filter and create labels."""
+    _, uri, _ = outputs
     df = aggregate_inspections(uri, table_name, establishment_types_wanted)
     df = remove_multi_day_inspections(df)
     df = remove_reinspections(df)
@@ -401,9 +484,10 @@ def convert_infractions_to_inspections(
 # Functionality from 3_*.ipynb
 @task
 def get_missing_lat_lon(
-    df: pd.DataFrame, uri: str, table_name: str
+    df: pd.DataFrame, outputs: List[str], table_name: str
 ) -> List[pd.DataFrame]:
     """Get unique locations that are missing a latitude and longitude."""
+    _, uri, _ = outputs
     logger = get_logger()
     logger.info("Getting locations missing a latitude and longitude...")
     engine = create_engine(uri)
@@ -445,12 +529,13 @@ def get_missing_lat_lon(
 @task
 def geocode_missing_addr_lat_lon(
     df_outputs: List[pd.DataFrame],
-    uri: str,
+    outputs: List[str],
     geocoded_table_name,
     min_delay: int = 1,
     max_delay: int = 3,
 ) -> pd.DataFrame:
     """Geocode locations with a missing address."""
+    _, uri, _ = outputs
     logger = get_logger()
     logger.info("Geocoding locations a missing co-ordinates...")
     engine = create_engine(uri)
@@ -500,36 +585,41 @@ def replace_missing_lat_lon(df: pd.DataFrame) -> pd.DataFrame:
 @flow(name="Run through end-to-end analysis workflow")
 def analyze_infractions(
     zip_filenames: List,
-    uri: str,
     cols_order_wanted: List,
     establishment_types_wanted: List,
     table_name: str = "inspections",
     geocoded_table_name: str = "addressinfo",
 ) -> pd.DataFrame:
     """Retrieve data, process and append to database table."""
+    # Database Administration
+    outputs = get_database_uris()
+    prepared_dbase = prepare_database(outputs, table_name)
+
     # Extract
-    files_lists = extract(zip_filenames, uri, table_name)
+    files_lists = extract(
+        zip_filenames, outputs, table_name, wait_for=[prepared_dbase]
+    )
 
     # Transform
     subflow_state = transform_all(files_lists, cols_order_wanted, table_name)
 
     # Load
     dfs = list(map(get_state_result, tuple(subflow_state.result())))
-    distinct_fnames = load(dfs, uri, table_name)
+    distinct_fnames = load(dfs, outputs, table_name)
 
     # Filter invalid infractions and Aggregate into inspections
     df = convert_infractions_to_inspections(
         establishment_types_wanted,
-        uri,
+        outputs,
         table_name,
         distinct_fnames,
         "is_infraction",
     )
 
     # Geocode missing latitudes and longitudes
-    df_outputs = get_missing_lat_lon(df.result().result(), uri, table_name)
+    df_outputs = get_missing_lat_lon(df.result().result(), outputs, table_name)
     df_geocoded = geocode_missing_addr_lat_lon(
-        df_outputs, uri, geocoded_table_name, 1, 3
+        df_outputs, outputs, geocoded_table_name, 1, 3
     )
     df = replace_missing_lat_lon(df_geocoded)
     return df

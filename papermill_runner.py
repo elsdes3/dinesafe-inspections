@@ -18,9 +18,73 @@ output_notebook_dir = os.path.join(PROJ_ROOT_DIR, "executed_notebooks")
 
 raw_data_path = os.path.join(data_dir, "raw")
 
-zero_dict_nb_name = "0_get_data.ipynb"
+zero_dict_nb_name = "0_ci_get_data.ipynb"
+one_dict_nb_name = "1_get_data.ipynb"
+two_dict_nb_name = "2_sql_filter_transform.ipynb"
+three_dict_nb_name = "3_geocode_missing_locations.ipynb"
+four_dict_nb_name = "4_get_stats_by_neighbourhood.ipynb"
+seven_dict_nb_name = "7_feat_engineering.ipynb"
+eight_dict_nb_name = "8_ml.ipynb"
 
-zero_dict = dict(ci_run=True, plot_xvar="date")
+zero_dict = dict(
+    dload_fpath=(
+        "data/processed/filtered_transformed_filledmissing_data__"
+        "20211209_120056.zip"
+    ),
+    action="download",
+)
+one_dict = dict(
+    table_name="inspections",
+    zip_filenames=[
+        "20130723222156",
+        "20150603085055",
+        "20151012004454",
+        "20160129205023",
+        "20160317045436",
+        "20160915001010",
+        "20170303162206",
+        "20170330001043",
+        "20170726115444",
+        "20190116215713",
+        "20190126084933",
+        "20190614092848",
+        "20210626163552",
+    ],
+    cols_order_wanted=[
+        "row_id",
+        "establishment_id",
+        "inspection_id",
+        "establishment_name",
+        "establishmenttype",
+        "establishment_address",
+        "latitude",
+        "longitude",
+        "establishment_status",
+        "minimum_inspections_peryear",
+        "infraction_details",
+        "inspection_date",
+        "severity",
+        "action",
+        "court_outcome",
+        "amount_fined",
+    ],
+)
+two_dict = dict(transformed_fname_prefix="filtered_transformed_data")
+three_dict = dict(
+    geocoded_fname_prefix="filtered_transformed_filledmissing_data"
+)
+four_dict = dict(
+    url=(
+        "https://ckan0.cf.opendata.inter.prod-toronto.ca/api/3/action/"
+        "package_show"
+    ),
+    neigh_params={"id": "4def3f65-2a65-4a4f-83c4-b2a4aed72d46"},
+    neigh_profile_params={"id": "6e19a90f-971c-46b3-852c-0c48c436d1fc"},
+    mci_params={"id": "247788f6-ca20-42e8-b00f-894ac43053e5"},
+    processed_data_fname_prefix="processed",
+)
+seven_dict = dict(proc_data_fname_prefix="processed_with_features")
+eight_dict = dict(trained_model_fname="trained_model")
 
 
 def papermill_run_notebook(
@@ -73,8 +137,24 @@ def run_notebooks(
 
 
 if __name__ == "__main__":
-    nb_dict_list = [zero_dict]
-    nb_name_list = [zero_dict_nb_name]
+    nb_dict_list = [
+        zero_dict,
+        # one_dict,
+        # two_dict,
+        # three_dict,
+        four_dict,
+        seven_dict,
+        eight_dict,
+    ]
+    nb_name_list = [
+        zero_dict_nb_name,
+        # one_dict_nb_name,
+        # two_dict_nb_name,
+        # three_dict_nb_name,
+        four_dict_nb_name,
+        seven_dict_nb_name,
+        eight_dict_nb_name,
+    ]
     notebook_list = [
         {os.path.join(PROJ_ROOT_DIR, nb_name): nb_dict}
         for nb_dict, nb_name in zip(nb_dict_list, nb_name_list)
