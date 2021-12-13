@@ -253,12 +253,12 @@ def load(
 
 
 # Functionality from 2_*.ipynb
-def get_actions_str(conn) -> List:
+def get_actions_str(conn, table_name: str) -> List:
     """Get actions str for SQL query."""
     df_actions = pd.read_sql(
-        """
+        f"""
         SELECT DISTINCT(action)
-        FROM inspections
+        FROM {table_name}
         """,
         con=conn,
     )
@@ -278,12 +278,12 @@ def get_actions_str(conn) -> List:
     return [action_strs, dtypes_dict]
 
 
-def get_outcomes_str(conn) -> List:
+def get_outcomes_str(conn, table_name: str) -> List:
     """Get actions str for SQL query."""
     df_court_outcomes = pd.read_sql(
-        """
+        f"""
         SELECT DISTINCT(court_outcome)
-        FROM inspections
+        FROM {table_name}
         """,
         con=conn,
     )
@@ -320,8 +320,8 @@ def aggregate_inspections(
     logger.info("Aggregate infractions into inspections...")
     engine = create_engine(uri)
     conn = engine.connect()
-    action_strs, dtypes_dict = get_actions_str(conn)
-    outcome_strs, outcomes_dtypes_dict = get_outcomes_str(conn)
+    action_strs, dtypes_dict = get_actions_str(conn, table_name)
+    outcome_strs, outcomes_dtypes_dict = get_outcomes_str(conn, table_name)
     establishment_types_wanted_str = (
         "('" + "', '".join(establishment_types_wanted) + "')"
     )
