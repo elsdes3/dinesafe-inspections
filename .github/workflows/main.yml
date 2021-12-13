@@ -13,3 +13,9 @@ jobs:
     - run: pip install tox
     - run: make lint
     - run: make ci
+      env:
+        AZURE_STORAGE_ACCOUNT: ${{ secrets.AZURE_STORAGE_ACCOUNT }}
+        AZURE_STORAGE_KEY: ${{ secrets.AZURE_STORAGE_KEY }}
+        ENDPOINT_SUFFIX: ${{ secrets.ENDPOINT_SUFFIX }}
+        BLOB_NAME_PREFIX: ${{ secrets.BLOB_NAME_PREFIX }}
+        AZURE_BLOB_CONTAINER_NAME: ${{ secrets.AZURE_BLOB_CONTAINER_NAME }}
