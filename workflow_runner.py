@@ -7,7 +7,7 @@
 # pylint: disable=invalid-name
 
 
-from src.workflow.prefect_utils import analyze_infractions
+from src.workflow.workflow_utils import analyze_infractions
 
 if __name__ == "__main__":
     # Name of database table
