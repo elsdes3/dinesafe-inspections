@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-"""Utility functions for notebooks and standalone scripts."""
+"""Workflow Utilities to run End-to-End Geocoding with GeoPy."""
 
 
 import os
