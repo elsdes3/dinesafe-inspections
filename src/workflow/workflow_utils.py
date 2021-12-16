@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 
-"""Helpers to run Prefect Flows."""
+"""Workflow Utilities to run End-to-End Data Analysis."""
 
 # pylint: disable=invalid-name,
 # pylint: disable=logging-fstring-interpolation
