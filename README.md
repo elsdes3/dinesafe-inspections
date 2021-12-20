@@ -51,7 +51,6 @@ This project could be useful to organizers of the DineSafe program (the client).
 ## [Project Organization](#project-organization)
 
     ├── LICENSE
-    ├── .env                          <- environment variables (verify this is in .gitignore)
     ├── .gitignore                    <- files and folders to be ignored by version control system
     ├── .pre-commit-config.yaml       <- configuration file for pre-commit hooks
     ├── .github
