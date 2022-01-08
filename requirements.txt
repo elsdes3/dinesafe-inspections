@@ -10,7 +10,7 @@ geopy==2.2.0
 rtree==0.9.7
 pygeos==0.12.0
 geopandas==0.10.2
-meteostat==1.5.10
+meteostat==1.5.11
 pymysql==1.0.2
 sqlalchemy==1.4.29
 azure-storage-blob==12.9.0
