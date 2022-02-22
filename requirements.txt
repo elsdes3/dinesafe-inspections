@@ -1,4 +1,4 @@
-numpy==1.22.1
+numpy==1.22.2
 pandas==1.4.1
 scikit-learn==1.0.2
 imbalanced-learn==0.9.0
@@ -10,7 +10,7 @@ geopy==2.2.0
 rtree==0.9.7
 pygeos==0.12.0
 geopandas==0.10.2
-meteostat==1.5.11
+meteostat==1.6.1
 pymysql==1.0.2
 sqlalchemy==1.4.31
 azure-storage-blob==12.9.0
