@@ -6,6 +6,7 @@
 
 # pylint: disable=invalid-name
 
+import argparse
 import os
 from datetime import datetime
 from typing import Dict, List
@@ -20,11 +21,15 @@ raw_data_path = os.path.join(data_dir, "raw")
 
 zero_dict_nb_name = "0_ci_get_data.ipynb"
 one_dict_nb_name = "1_get_data.ipynb"
+one_v2_dict_nb_name = "1_get_data_v2.ipynb"
 two_dict_nb_name = "2_sql_filter_transform.ipynb"
+two_v2_dict_nb_name = "2_sql_filter_transform_v2.ipynb"
 three_dict_nb_name = "3_geocode_missing_locations.ipynb"
+three_v2_dict_nb_name = "3_geocode_missing_locations_v2.ipynb"
 four_dict_nb_name = "4_get_stats_by_neighbourhood.ipynb"
 seven_dict_nb_name = "7_feat_engineering.ipynb"
 eight_dict_nb_name = "8_ml.ipynb"
+nine_dict_nb_name = "9_delete_all_v2.ipynb"
 
 zero_dict = dict(
     dload_fpath=(
@@ -69,8 +74,33 @@ one_dict = dict(
         "amount_fined",
     ],
 )
+one_dict_v2 = dict(
+    table_name="inspections",
+    zip_filenames=[
+        "20130723222156",
+        "20150603085055",
+        "20151012004454",
+        "20160129205023",
+        "20160317045436",
+        "20160915001010",
+        "20170303162206",
+        "20170330001043",
+        "20170726115444",
+        "20190116215713",
+        "20190126084933",
+        "20190614092848",
+        "20210626163552",
+    ],
+    stage_name="processed_dinesafe_data",
+    file_format_name="COMMACOLSEP_ONEHEADROW",
+    num_proc_data_files=10,
+)
 two_dict = dict(transformed_fname_prefix="filtered_transformed_data")
+two_dict_v2 = dict(transformed_fname_prefix="filtered_transformed_data")
 three_dict = dict(
+    geocoded_fname_prefix="filtered_transformed_filledmissing_data"
+)
+three_dict_v2 = dict(
     geocoded_fname_prefix="filtered_transformed_filledmissing_data"
 )
 four_dict = dict(
@@ -85,6 +115,13 @@ four_dict = dict(
 )
 seven_dict = dict(proc_data_fname_prefix="processed_with_features")
 eight_dict = dict(trained_model_fname="trained_model")
+nine_dict = dict(
+    table_names=["inspections", "addressinfo"],
+    stage_name="processed_dinesafe_data",
+    file_format_name="COMMACOLSEP_ONEHEADROW",
+    raw_data_dir="data/raw",
+    processed_data_dir="data/processed",
+)
 
 
 def papermill_run_notebook(
@@ -137,6 +174,18 @@ def run_notebooks(
 
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--ci-run",
+        type=str,
+        dest="ci_run",
+        default="yes",
+        help="whether to run CI build",
+    )
+    args = parser.parse_args()
+
+    one_dict.update({"ci_run": args.ci_run})
+
     nb_dict_list = [
         zero_dict,
         # one_dict,
@@ -145,6 +194,10 @@ if __name__ == "__main__":
         four_dict,
         seven_dict,
         eight_dict,
+        one_dict_v2,
+        two_dict_v2,
+        # three_dict_v2,
+        nine_dict,
     ]
     nb_name_list = [
         zero_dict_nb_name,
@@ -154,6 +207,10 @@ if __name__ == "__main__":
         four_dict_nb_name,
         seven_dict_nb_name,
         eight_dict_nb_name,
+        one_v2_dict_nb_name,
+        two_v2_dict_nb_name,
+        # three_v2_dict_nb_name,
+        nine_dict_nb_name,
     ]
     notebook_list = [
         {os.path.join(PROJ_ROOT_DIR, nb_name): nb_dict}
