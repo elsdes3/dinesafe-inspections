@@ -200,6 +200,7 @@ if __name__ == "__main__":
         four_dict,
         seven_dict,
         eight_dict,
+        nine_dict,
     ]
     nb_name_list = [
         one_v2_dict_nb_name,
@@ -213,6 +214,7 @@ if __name__ == "__main__":
         four_dict_nb_name,
         seven_dict_nb_name,
         eight_dict_nb_name,
+        nine_dict_nb_name,
     ]
     notebook_list = [
         {os.path.join(PROJ_ROOT_DIR, nb_name): nb_dict}
