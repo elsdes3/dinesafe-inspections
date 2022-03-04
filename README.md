@@ -16,12 +16,15 @@
    * [Present Operations](#present-operations)
    * [Objectives](#objectives)
 2. [Analysis](#analysis)
-3. [Project Organization](#project-organization)
+3. [Notes](#notes)
+4. [Project Organization](#project-organization)
 
 ## [About](#about)
 
 ### [Overview](#overview)
-This project aims to explore the feasibility of using [predictive modeling](https://www.netsuite.com/portal/resource/articles/financial-management/predictive-modeling.shtml) to predict [significant or crucial infractions during food inspections](https://www.toronto.ca/community-people/health-wellness-care/health-programs-advice/food-safety/dinesafe/dinesafe-infractions/) that would be detected during a physical inspection conducted by the DineSafe ([1](https://www.toronto.ca/community-people/health-wellness-care/health-programs-advice/food-safety/dinesafe/), [2](https://www.toronto.ca/community-people/health-wellness-care/health-programs-advice/food-safety/dinesafe/about-dinesafe/)) program at restaurants, grocery stores and similar businesses in the City of Toronto. This is work in progress.
+This project aims to explore the feasibility of using [predictive modeling](https://www.netsuite.com/portal/resource/articles/financial-management/predictive-modeling.shtml) to predict [significant or crucial infractions during food inspections](https://www.toronto.ca/community-people/health-wellness-care/health-programs-advice/food-safety/dinesafe/dinesafe-infractions/) that would be detected during a physical inspection conducted by the DineSafe ([1](https://www.toronto.ca/community-people/health-wellness-care/health-programs-advice/food-safety/dinesafe/), [2](https://www.toronto.ca/community-people/health-wellness-care/health-programs-advice/food-safety/dinesafe/about-dinesafe/)) program at restaurants, grocery stores and similar businesses in the City of Toronto.
+
+This is work in progress.
 
 ### [Background](#background)
 Of the nearly 11,000 annual inspections performed by DineSafe inspectors at establishments in the City of Toronto, a small fraction will discover infractions that present a potential or immediate health hazard. These are called significant or crucial infractions respectively. The result of an inspection revealing infractions can be the closing of the business in order to protect the health of customers that dine at the establishment.
@@ -46,7 +49,15 @@ This project could be useful to organizers of the DineSafe program (the client).
    - for establihments missing a latitude and longitude, use [geocoding](https://desktop.arcgis.com/en/arcmap/latest/manage-data/geocoding/what-is-geocoding.htm) to get these co-ordinates from the [Bing Maps](https://www.bing.com/maps/) [API](https://www.microsoft.com/en-us/maps/choose-your-bing-maps-api)
 4. `4_get_stats_by_neighbourhood.ipynb` ([view](https://nbviewer.org/github/elsdes3/dinesafe-inspections/blob/main/4_get_stats_by_neighbourhood.ipynb))
    - get the city of Toronto neighbourhood containing each inspected establishment and neighbourhood-based statistics (population, crimes committed, etc.)
-5. more to be added here...
+5. `6_eda.ipynb` ([view](https://nbviewer.org/github/elsdes3/dinesafe-inspections/blob/main/6_eda.ipynb))
+   - exploratory data analysis
+6. `7_feat_engineering.ipynb` ([view](https://nbviewer.org/github/elsdes3/dinesafe-inspections/blob/main/7_feat_engineering.ipynb))
+   - engineering features to be used in ML experiments
+7. `8_ml.ipynb` ([view](https://nbviewer.org/github/elsdes3/dinesafe-inspections/blob/main/8_ml.ipynb))
+   - ML experiments
+
+## [Notes](#notes)
+1. A notebook with a filename ending in `_v2.ipynb` contains analysis that is in progress.
 
 ## [Project Organization](#project-organization)
 
