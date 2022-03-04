@@ -189,6 +189,10 @@ if __name__ == "__main__":
     nine_dict.update({"ci_run": args.ci_run})
 
     nb_dict_list = [
+        one_dict_v2,
+        two_dict_v2,
+        # three_dict_v2,
+        nine_dict,
         zero_dict,
         # one_dict,
         # two_dict,
@@ -196,12 +200,12 @@ if __name__ == "__main__":
         four_dict,
         seven_dict,
         eight_dict,
-        one_dict_v2,
-        two_dict_v2,
-        # three_dict_v2,
-        nine_dict,
     ]
     nb_name_list = [
+        one_v2_dict_nb_name,
+        two_v2_dict_nb_name,
+        # three_v2_dict_nb_name,
+        nine_dict_nb_name,
         zero_dict_nb_name,
         # one_dict_nb_name,
         # two_dict_nb_name,
@@ -209,10 +213,6 @@ if __name__ == "__main__":
         four_dict_nb_name,
         seven_dict_nb_name,
         eight_dict_nb_name,
-        one_v2_dict_nb_name,
-        two_v2_dict_nb_name,
-        # three_v2_dict_nb_name,
-        nine_dict_nb_name,
     ]
     notebook_list = [
         {os.path.join(PROJ_ROOT_DIR, nb_name): nb_dict}
