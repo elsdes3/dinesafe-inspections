@@ -5,7 +5,7 @@
 PROJECT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 PROJECT_NAME = "dinesafe-inspections"
 REPO_NAME = "dinesafe-inspections"
-PYTHON_VERSION = "3.9.5"
+PYTHON_VERSION = "3.9.7"
 
 #################################################################################
 # COMMANDS                                                                      #
@@ -23,12 +23,19 @@ clean-py:
 	@echo "+ $@"
 	@find . -type f -name "*.py[co]" -delete
 	@find . -type d -name "__pycache__" -delete
+	@rm -rf .tox .ipynb_checkpoints
 .PHONY: clean-py
 
-## Run ci build with tox
+## Run CI build locally
+ci-local:
+	@echo "+ $@"
+	@tox -e ci -- "no"
+.PHONY: ci-local
+
+## Run CI build
 ci:
 	@echo "+ $@"
-	@tox -e ci
+	@tox -e ci -- "yes"
 .PHONY: ci
 
 ## Run workflow
@@ -42,6 +49,12 @@ build:
 	@echo "+ $@"
 	@tox -e build
 .PHONY: build
+
+## Convert notebooks to HTML
+nb-convert:
+	@echo "+ $@"
+	@tox -e nbconvert -- "executed_notebooks"
+.PHONY: nb-convert
 
 #################################################################################
 # PROJECT RULES                                                                 #
