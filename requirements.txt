@@ -12,5 +12,6 @@ geopandas==0.10.2
 meteostat==1.6.1
 pymysql==1.0.2
 sqlalchemy==1.4.31
+python-dotenv==0.19.2
 snowflake-connector-python[secure-local-storage,pandas]==2.7.4
 azure-storage-blob==12.9.0
