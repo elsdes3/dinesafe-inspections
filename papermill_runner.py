@@ -184,7 +184,9 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    one_dict.update({"ci_run": args.ci_run})
+    one_dict_v2.update({"ci_run": args.ci_run})
+    two_dict_v2.update({"ci_run": args.ci_run})
+    nine_dict.update({"ci_run": args.ci_run})
 
     nb_dict_list = [
         # zero_dict,
