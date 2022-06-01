@@ -9,7 +9,7 @@ geopy==2.2.0
 rtree==0.9.7
 pygeos==0.12.0
 geopandas==0.10.2
-meteostat==1.6.1
+meteostat==1.6.2
 pymysql==1.0.2
 sqlalchemy==1.4.31
 python-dotenv==0.19.2
